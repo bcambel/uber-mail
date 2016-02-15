@@ -1,0 +1,5 @@
+[default]
+db = postgresql://test:test@localhost/emailer
+mailgun_key =
+mailgun_domain =
+sendgrid_key =
