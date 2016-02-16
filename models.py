@@ -3,13 +3,14 @@ import uuid
 from app import db
 
 class Email(db.Model):
-  id = db.Column(db.String(36),primary_key=True)
+  id = db.Column(db.String(36),primary_key=True, default=uuid.uuid4)
   status = db.Column(db.String(10))
 
   from_address = db.Column(db.String(100))
   to_address = db.Column(db.String(1000))
   subject = db.Column(db.String(1000))
   mail = db.Column(db.String(1000))
+  result = db.Column(db.Text)
 
   created_at = db.Column(db.Date, default=datetime.utcnow)
   updated_at = db.Column(db.Date, default=datetime.utcnow)

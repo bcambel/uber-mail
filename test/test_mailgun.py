@@ -1,5 +1,4 @@
-#tests.py
-import nose
+from nose import with_setup
 from nose.tools import nottest
 from app import *
 from mailing import Postman
@@ -41,9 +40,23 @@ def test_empty_text_field_fails():
 
   assert a == expected_result
 
+def setup_func():
+  "Manipulate API key temporarily to cause the requests fail"
+  postman.mailgun.api_key2, postman.mailgun.api_key = postman.mailgun.api_key, "invalid_key"
+
+def teardown_func():
+  "Rollback to the original(correct) key"
+  postman.mailgun.api_key = postman.mailgun.api_key2
+
+@with_setup(setup_func, teardown_func)
 def test_invalid_credentials_result_in_exception():
-  postman.mailgun.api_key = postman.mailgun.api_key[::-1]
+
   a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "", "b")
   print a
-
   assert a['status'] == 401
+
+@nottest
+def test_successfull_email_request_returns_a_id():
+  a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Hello", "Hey Bahadir, delivery will be late")
+
+  assert a['status'] == 200 and "id" in a['result']

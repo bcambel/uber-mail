@@ -1,5 +1,4 @@
-#tests.py
-import nose
+from nose import with_setup
 from nose.tools import nottest
 from app import *
 from mailing import Postman
@@ -17,6 +16,7 @@ def test_invalid_from_field():
   print a
   assert a == excepted_result
 
+@nottest
 def test_invalid_to_field():
   """
   Sendgrid accepts empty To fields. Wow.
@@ -35,3 +35,31 @@ def test_empty_text_field_fails():
                      'success': False}
   print a
   assert a == expected_result
+
+
+def setup_func():
+  "Manipulate API key temporarily to cause the requests fail"
+  postman.sendgrid.sg = sendgrid.SendGridClient(postman.sendgrid.api_key[::-1])
+
+def teardown_func():
+  "Rollback to the original(correct) key"
+  postman.sendgrid.sg = sendgrid.SendGridClient(postman.sendgrid.api_key)
+
+@with_setup(setup_func, teardown_func)
+def test_invalid_api_key():
+  """
+  Sendgrid accepts empty To fields. Wow.
+  Sendgrid accepts invalid email addresses.
+  """
+
+  a = postman.sendgrid.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
+
+  print a
+  assert a['status'] == 400
+
+@nottest
+def test_send():
+  a = postman.sendgrid.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
+  print a
+  assert a['status'] == 200
+  assert a['result'] == {'message':'success'}

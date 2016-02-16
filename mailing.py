@@ -2,6 +2,7 @@ import json
 import logging
 import requests
 import sendgrid
+import time
 
 # in order to stop InsecureRequestWarnings
 # http://stackoverflow.com/questions/27981545/suppress-insecurerequestwarning-unverified-https-request-is-being-made-in-pytho
@@ -10,13 +11,18 @@ requests.packages.urllib3.disable_warnings()
 class Postman(object):
 
   def __init__(self, **settings):
-    self.default = self.mailgun = MailGunPostman(settings['mailgun_key'], settings['mailgun_domain'])
+    self.active = self.mailgun = MailGunPostman(settings['mailgun_key'], settings['mailgun_domain'])
     self.alternate = self.sendgrid = SendGridPostman(settings['sendgrid_key'])
-    self.active = self.default
+
 
   def deliver(self, from_email, to, subject, text):
     logging.info("Deliver {} with {}".format(to,subject))
     primary_response = self.active.deliver(from_email, to, subject, text)
+
+    return primary_response
+
+  def switch(self):
+    self.active, self.alternate = self.alternate, self.active
 
 
 class MailGunPostman(Postman):
@@ -27,13 +33,14 @@ class MailGunPostman(Postman):
     self.domain = domain
     self.api_key = api_key
 
-  def deliver(self, from_email, to, subject, text):
+  def deliver(self, from_email, to, subject, text, html=None):
     send_result = requests.post("https://api.mailgun.net/v3/{}/messages".format(self.domain),
           auth=("api", self.api_key),
           data={"from": from_email,
                 "to": to,
                 "subject": subject,
-                "text": text}, verify=False)
+                "text": text,
+                "html": html or text}, verify=False)
 
     logging.debug("Sent resulted in {} :\n{}".format(send_result.status_code, send_result.text))
 
@@ -44,7 +51,9 @@ class MailGunPostman(Postman):
 
     return {'status': send_result.status_code,
             'success': send_result.ok,
-            'result' : message}
+            'result' : message,
+            'via': type(self).__name__,
+            'ts' : int(time.time())}
 
 
 
@@ -53,7 +62,8 @@ class SendGridPostman(Postman):
   SendGrid mail service integration.
   """
   def __init__(self, api_key):
-    self.sg = sendgrid.SendGridClient(api_key)
+    self.api_key = api_key
+    self.sg = sendgrid.SendGridClient(self.api_key)
 
   def deliver(self, from_email, to, subject, text, html=""):
     message = sendgrid.Mail()
@@ -67,4 +77,6 @@ class SendGridPostman(Postman):
 
     return {'status' : status,
             'success' : 200 <= status < 300,
-            'result': json.loads(msg)}
+            'result': json.loads(msg),
+            'via': type(self).__name__,
+            'ts' : int(time.time())}
