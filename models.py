@@ -1,5 +1,6 @@
 from datetime import datetime
 import uuid
+import json
 from app import db
 
 class Email(db.Model):
@@ -16,7 +17,12 @@ class Email(db.Model):
   updated_at = db.Column(db.Date, default=datetime.utcnow)
 
   def as_dict(self):
-    return {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+    d = {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+    try:
+      d['result'] = json.loads(d['result'])
+    except:
+      pass
+    return d
 
   @classmethod
   def insert(cls, **kwargs):

@@ -15,13 +15,17 @@ class Postman(object):
     self.alternate = self.sendgrid = SendGridPostman(settings['sendgrid_key'])
 
 
-  def deliver(self, from_email, to, subject, text):
+  def deliver(self, from_email, to, subject, text, html=None):
+    "Uses the active email gateway to send an email"
     logging.info("Deliver {} with {}".format(to,subject))
     primary_response = self.active.deliver(from_email, to, subject, text)
 
     return primary_response
 
   def switch(self):
+    """
+    Switches active email provider with the alternate one.
+    """
     self.active, self.alternate = self.alternate, self.active
 
 
@@ -74,6 +78,7 @@ class SendGridPostman(Postman):
     message.set_from(from_email)
     status, msg = self.sg.send(message)
 
+    # sendgrid reports 429 if Rate Limit exceeded.
 
     return {'status' : status,
             'success' : 200 <= status < 300,

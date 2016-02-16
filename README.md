@@ -56,3 +56,9 @@ updated_at
 ### /admin
 
 Flask Admin application to manage mail objects. Theorically only accessible by the administrator of the application. For demostration purposes, admin app is open to everyone.
+
+## Todo
+
+[] Delete email object after tests complete ( on tear down )
+[] Handle Mail gateway timeouts
+[+] Handle 429(Too many requests) by Sendgrid

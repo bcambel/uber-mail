@@ -7,14 +7,17 @@ postman = Postman(**{ 'mailgun_key' : settings.get('default', 'mailgun_key'),
                   'mailgun_domain': settings.get("default", "mailgun_domain"),
                   'sendgrid_key' : settings.get('default' ,'sendgrid_key')})
 
+def match_result(actual_result, expected_result):
+  assert actual_result['status'] == expected_result['status'] and actual_result['result'] == expected_result['result']
+
 def test_invalid_from_field():
   a = postman.sendgrid.deliver("", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
 
-  excepted_result = {'status': 400,
+  expected_result = {'status': 400,
                      'result': {u'message': u'error', u'errors': [u'Empty from email address (required)']},
                      'success': False}
   print a
-  assert a == excepted_result
+  match_result(a, expected_result)
 
 @nottest
 def test_invalid_to_field():
@@ -34,7 +37,7 @@ def test_empty_text_field_fails():
                      'result': {u'message': u'error', u'errors': [u'Missing email body']},
                      'success': False}
   print a
-  assert a == expected_result
+  match_result(a, expected_result)
 
 
 def setup_func():
@@ -61,5 +64,5 @@ def test_invalid_api_key():
 def test_send():
   a = postman.sendgrid.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
   print a
-  assert a['status'] == 200
-  assert a['result'] == {'message':'success'}
+
+  match_result(a, {'status':200, 'result' : {'message':'success'}})
