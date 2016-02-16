@@ -1,12 +1,17 @@
+import json
 import logging
 import requests
 import sendgrid
 
+# in order to stop InsecureRequestWarnings
+# http://stackoverflow.com/questions/27981545/suppress-insecurerequestwarning-unverified-https-request-is-being-made-in-pytho
+requests.packages.urllib3.disable_warnings()
+
 class Postman(object):
 
   def __init__(self, **settings):
-    self.default = MailGunPostman(settings['mailgun_key'], settings['mailgun_domain'])
-    self.alternate = SendGridPostman(settings['sendgrid_key'])
+    self.default = self.mailgun = MailGunPostman(settings['mailgun_key'], settings['mailgun_domain'])
+    self.alternate = self.sendgrid = SendGridPostman(settings['sendgrid_key'])
     self.active = self.default
 
   def deliver(self, from_email, to, subject, text):
@@ -30,7 +35,17 @@ class MailGunPostman(Postman):
                 "subject": subject,
                 "text": text}, verify=False)
 
-    return send_result.ok
+    logging.debug("Sent resulted in {} :\n{}".format(send_result.status_code, send_result.text))
+
+    try:
+      message = send_result.json()
+    except ValueError:
+      message = send_result.text
+
+    return {'status': send_result.status_code,
+            'success': send_result.ok,
+            'result' : message}
+
 
 
 class SendGridPostman(Postman):
@@ -48,4 +63,8 @@ class SendGridPostman(Postman):
     message.set_text(text)
     message.set_from(from_email)
     status, msg = self.sg.send(message)
-    return status, msg
+
+
+    return {'status' : status,
+            'success' : 200 <= status < 300,
+            'result': json.loads(msg)}

@@ -37,7 +37,7 @@ subject
 text
 ```
 
-### /mail/<id>
+### ```/mail/<id>```
 
 Mail service accepts an ID parameter and returns the mail object.
 
