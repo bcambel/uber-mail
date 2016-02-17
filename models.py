@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 import json
 from app import db
-
+from flask_restful_swagger import swagger
 
 class Statuses:
   queued = "queued"
@@ -10,6 +10,7 @@ class Statuses:
   success = "success"
   error = "error"
 
+@swagger.model
 class Email(db.Model):
   id = db.Column(db.String(36),primary_key=True, default=uuid.uuid4)
   status = db.Column(db.String(10))

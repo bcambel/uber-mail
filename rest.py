@@ -1,6 +1,7 @@
 from flanker.addresslib import address
 from flask import request
 from flask_restful import Resource, abort
+from flask_restful_swagger import swagger
 import logging
 import json
 
@@ -38,6 +39,14 @@ def validate_form(form):
   return messages
 
 class SendEmail(Resource):
+  @swagger.operation(notes='Retrieve email status',
+                    responseClass=Email.__name__,
+                    nickname='fetch email',
+                    parameters=[{
+                      'name': 'id', 'dataType': 'string'
+                    }],
+                    response_messages=[{ 'code':200, 'message': 'An email with given ID is found and returned'},
+                    { 'code':404, 'message': 'Email not found error'}])
   def get(self, id):
     email = Email.by_id(id)
 
@@ -46,6 +55,15 @@ class SendEmail(Resource):
 
     return email.as_dict()
 
+  @swagger.operation(notes='Submit an email to send',
+                    responseClass=Email.__name__,
+                    nickname='submit a new email',
+                    parameters=[{'name': 'from',"required": True, "dataType": 'string',},
+                                {"required": True,'name': 'to', "dataType": 'string', 'description': 'A full email validation done. Supply a comma separated email addresses to send the email to multiple destinations'},
+                                {"required": True,'name': 'subject', "dataType": 'string',},
+                                {"required": True,'name': 'text', "dataType": 'string',} ],
+                    response_messages=[{ 'code':200, 'message': 'An email created and added to the queueu'},
+                    { 'code':400, 'message': 'Invalid Parameters'}])
   def post(self,id=None):
 
     data = request.form

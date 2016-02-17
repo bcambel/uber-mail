@@ -46,6 +46,8 @@ Storing incoming mail requests into DB has the following benefits.
 
 ## Endpoints
 
+Navigate to [http://localhost:5000/api/spec](http://localhost:5000/api/spec) to see all the available API endpoints, their required parameters and basic descriptions.
+
 Mail service accepts a POST request with the following parameters;
 
 ### POST ```/mail```
@@ -106,3 +108,17 @@ Flask Admin application to manage mail objects. Theorically only accessible by t
 [] Delete email object after tests complete ( on tear down )
 [] Handle Mail gateway timeouts
 [+] Handle 429(Too many requests) by Sendgrid
+
+## Development
+
+```sql
+CREATE TABLE email (id VARCHAR(36),
+                    status VARCHAR(10),
+                    from_address VARCHAR(100),
+                    to_address TEXT,
+                    subject TEXT,
+                    mail TEXT,
+                    created_at TIMESTAMP(6) WITHOUT TIME ZONE,
+                    updated_at TIMESTAMP(6) WITHOUT TIME ZONE,
+                    result TEXT);
+```

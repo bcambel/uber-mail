@@ -5,6 +5,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_restful_swagger import swagger
 import logging
 import os
 import requests
@@ -34,7 +35,12 @@ flapp.debug=True
 
 # navigate to localhost:5000/admin to interact with Mail objects.
 admin = Admin(flapp, name='MailServ', template_mode='bootstrap3')
-api = Api(flapp)
+api = swagger.docs(Api(flapp), apiVersion='1.0',
+                    resourcePath='/',
+                   produces=["application/json", "text/html"],
+                   api_spec_url='/api/spec',
+                   description='A Basic Mail Service API')
+
 db = SQLAlchemy(flapp)
 
 # app will crash on startup if cant connect
