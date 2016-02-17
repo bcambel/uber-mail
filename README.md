@@ -15,6 +15,8 @@ and tries to send email to the parties.
 
 ## Architecture
 
+![mail_service](https://cloud.githubusercontent.com/assets/144385/13109081/73411c14-d577-11e5-891b-bd66c277823b.png)
+
 Each mail post request stored into DB and queued for sending in some later time. API clients can record the email id, and query the API anytime to retrieve the status of the email sending operation. Each email contains a result field which stores the response of the API gateway. In SendGrid case, the result message contains the internal SendGrid ID.
 
 ## Endpoints
@@ -26,9 +28,9 @@ Mail service accepts a POST request with the following parameters;
 ```json
 {"from": "bcambel@gmail.com",
   "to": "bcambel@gmail.com",
-  "subject": 'Hello',
-  "text": 'Is this yours bahadir?',
-  "html": 'Is this yours bahadir?'}
+  "subject": "Hello",
+  "text": "Is this yours bahadir?",
+  "html": "Is this yours bahadir?"}
 ```
 
 and returns
