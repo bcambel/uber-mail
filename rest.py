@@ -42,6 +42,9 @@ class SendEmail(Resource):
   def get(self, id):
     email = Email.by_id(id)
 
+    if email is None:
+        abort(404, message="Mail not found")
+
     return email.as_dict()
 
   def post(self,id=None):
