@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 from app import startup, db, settings
 from mailing import Postman
-from models import Email
+from models import Email, Statuses
 
 class MailService(object):
   """
@@ -21,12 +21,12 @@ class MailService(object):
 
   def lock_instance(self, mail):
 
-    mail.status = 'inprogress'
+    mail.status = Statuses.inprogress
     mail.lock_at = datetime.utcnow()
     self.db.session.add(mail)
     self.db.session.commit()
 
-  def release_instance(self, mail, status='success', result=None):
+  def release_instance(self, mail, status=Statuses.success, result=None):
 
     mail.status = status
     mail.lock = None
@@ -45,16 +45,16 @@ class MailService(object):
 
     if status_code >= 429: # classic 5xx + 429 (Too many requests)
       self.postman.switch()
-      self.release_instance(mail, status='queued')
+      self.release_instance(mail, status=Statuses.queued)
     elif delivery_result['success']:
-      self.release_instance(mail, 'success', delivery_result)
+      self.release_instance(mail, Statuses.success, delivery_result)
     else:
       # handle 3xx and 4xx errors.
-      self.release_instance(mail, 'error', delivery_result)
+      self.release_instance(mail, Statuses.error, delivery_result)
 
   def query(self):
     logging.info("Query Mail Queue")
-    eq = Email.query.filter(Email.status=='queued')
+    eq = Email.query.filter(Email.status==Statuses.queued)
 
     for mail in eq:
       self.lock_instance(mail)

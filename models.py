@@ -3,6 +3,13 @@ import uuid
 import json
 from app import db
 
+
+class Statuses:
+  queued = "queued"
+  inprogress = "inprogress"
+  success = "success"
+  error = "error"
+
 class Email(db.Model):
   id = db.Column(db.String(36),primary_key=True, default=uuid.uuid4)
   status = db.Column(db.String(10))
@@ -28,7 +35,7 @@ class Email(db.Model):
   def insert(cls, data):
     eq = Email()
     eq.id = str(uuid.uuid4())
-    eq.status = "queued"
+    eq.status = Statuses.queued
     eq.from_address = data.get("from")
     eq.to_address = data.get("to")
     eq.subject = data.get("subject")

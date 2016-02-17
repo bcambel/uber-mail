@@ -48,7 +48,7 @@ Storing incoming mail requests into DB has the following benefits.
 
 Mail service accepts a POST request with the following parameters;
 
-### POST /mail
+### POST ```/mail```
 
 ```json
 {"from": "bcambel@gmail.com",
@@ -97,7 +97,7 @@ Mail service accepts an ID parameter and returns the mail object.
 
 ```
 
-### GET /admin
+### GET ```/admin```
 
 Flask Admin application to manage mail objects. Theorically only accessible by the administrator of the application. For demostration purposes, admin app is open to everyone.
 

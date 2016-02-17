@@ -1,5 +1,6 @@
 import json
 import logging
+from nose.tools import nottest
 import requests
 import time
 
@@ -134,6 +135,7 @@ def test_empty_fields():
   assert api_json_result['message'][2]['field'] == 'subject'
 
 
+@nottest
 def test_unaccesible_db_service_should_throw_503():
   api_result = app_client.get("/mail/x")
 
