@@ -19,22 +19,30 @@ Mail service accepts a POST request with the following parameters;
 
 ### /mail
 
-```
-from_address
-to_address
-subject
-text
+```json
+{"from": "bcambel@gmail.com",
+  "to": "bcambel@gmail.com",
+  "subject": 'Hello',
+  "text": 'Is this yours bahadir?',
+  "html": 'Is this yours bahadir?'}
 ```
 
 and returns
 
-```
-id
-status
-from_address
-to_address
-subject
-text
+```json
+{
+    "created_at": "2016-02-17 09:38:55.581043",
+    "from_address": "bcambel@gmail.com",
+    "id": "be7f79dd-79f3-43bb-8f49-e60cd7ac2d89",
+    "mail": "Is this yours bahadir?",
+    "result": "None",
+    "status": "queued",
+    "subject": "Hello",
+    "success": true,
+    "to_address": "bcambel@gmail.com",
+    "updated_at": "2016-02-17 09:38:55.581055"
+}
+
 ```
 
 ### ```/mail/<id>```
@@ -42,15 +50,20 @@ text
 Mail service accepts an ID parameter and returns the mail object.
 
 
-```
-id
-status
-from_address
-to_address
-subject
-text
-created_at
-updated_at
+```json
+{
+    "created_at": "2016-02-17 09:38:55.581043",
+    "from_address": "bcambel@gmail.com",
+    "id": "be7f79dd-79f3-43bb-8f49-e60cd7ac2d89",
+    "mail": "Is this yours bahadir?",
+    "result": "None",
+    "status": "queued",
+    "subject": "Hello",
+    "success": true,
+    "to_address": "bcambel@gmail.com",
+    "updated_at": "2016-02-17 09:38:55.581055"
+}
+
 ```
 
 ### /admin

@@ -2,13 +2,11 @@ from nose import with_setup
 from nose.tools import nottest
 from app import *
 from mailing import Postman
+from test_base import match_result
 
 postman = Postman(**{ 'mailgun_key' : settings.get('default', 'mailgun_key'),
                   'mailgun_domain': settings.get("default", "mailgun_domain"),
                   'sendgrid_key' : settings.get('default' ,'sendgrid_key')})
-
-def match_result(actual_result, expected_result):
-  assert actual_result['status'] == expected_result['status'] and actual_result['result'] == expected_result['result']
 
 def test_invalid_from_field_fails():
   a = postman.mailgun.deliver("bcambel@.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
