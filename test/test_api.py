@@ -107,3 +107,8 @@ def test_multiple_email_invalid_fails_validation():
   assert api_json_result['message'][0]['field'] == 'to'
   assert api_json_result['message'][0]['parsed'] == 'bcambel@gmail.com'
   assert api_json_result['message'][0]['unparsed'] == 'bcambel@'
+
+def test_non_existing_mail_should_return_404():
+  api_result = app_client.get("/mail/x")
+
+  assert api_result.status == "404 NOT FOUND"
