@@ -7,14 +7,13 @@ import json
 from models import Email
 
 email_fields = ['from','to']
-
 required_fields = ['from','to','subject','text']
 
 def validate_form(form):
   messages = []
 
   for field in required_fields:
-    if not field in form:
+    if not field in form or len(form.get(field, "")) <= 0:
       messages.append({'field': field, 'message':"Missing required field '{}'".format(field)})
 
   for field in email_fields:

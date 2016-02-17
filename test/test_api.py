@@ -1,6 +1,7 @@
 import json
 import logging
 import requests
+import time
 
 from app import *
 from test_base import match_result
@@ -112,3 +113,32 @@ def test_non_existing_mail_should_return_404():
   api_result = app_client.get("/mail/x")
 
   assert api_result.status == "404 NOT FOUND"
+
+def test_empty_fields():
+  """
+  Send 2 emails one valid, one invalid, except to fail.
+  """
+  empties = base_email.copy()
+  empties['to'] = ''
+  empties['from'] = ''
+  empties['subject'] = ''
+
+  api_result = app_client.post("/mail",
+                            data=empties)
+
+  assert api_result.status == "400 BAD REQUEST"
+  api_json_result = json.loads(api_result.data)
+
+  assert api_json_result['message'][0]['field'] == 'from'
+  assert api_json_result['message'][1]['field'] == 'to'
+  assert api_json_result['message'][2]['field'] == 'subject'
+
+
+def test_unaccesible_db_service_should_throw_503():
+  api_result = app_client.get("/mail/x")
+
+  db.session.connection().close()
+
+  time.sleep(2)
+  print api_result.status
+  assert api_result.status == "503 SERVICE UNAVAILABLE"

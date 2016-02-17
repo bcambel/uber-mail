@@ -1,6 +1,5 @@
 import argparse
 from ConfigParser import RawConfigParser
-
 from flask import Flask, request
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -38,6 +37,7 @@ admin = Admin(flapp, name='MailServ', template_mode='bootstrap3')
 api = Api(flapp)
 db = SQLAlchemy(flapp)
 
+# app will crash on startup if cant connect
 db.create_all()
 
 def startup():

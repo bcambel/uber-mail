@@ -19,11 +19,36 @@ and tries to send email to the parties.
 
 Each mail post request stored into DB and queued for sending in some later time. API clients can record the email id, and query the API anytime to retrieve the status of the email sending operation. Each email contains a result field which stores the response of the API gateway. In SendGrid case, the result message contains the internal SendGrid ID.
 
+### Rationale
+
+Storing incoming mail requests into DB has the following benefits.
+
+1. A request will be safe. It is stored into a transactional db. It is there. Not like MongoDB there, it is actually safely stored into disk.
+2. If necessary, additional logic like cancel, retry, scheduling could be easily added.
+3. Restart proof. It doesn't matter if the front-end server is restarted or not.
+4. Horizontally scalable components. Add more API servers, add more mail service.
+5. Multiple services; API Service and Mail Service. Stop mail service, upgrade code, API service will be still operational.
+6. Add more Email providers to increase overall service output. (More active email gateways)
+7. A flood in incoming mail requests will not affect the overall output of the system, as long as the DB is available.
+
+
+## Enhancements
+
+- Current approach to switch between providers with a single 5xx exception is simple but naive.
+- Mail service sends email one by one. (introduce Multiprocessing.Pool to send multiple emails at the same time)
+- Adding more mail service might introduce locking same email to dequeue. A better approach is necessary.
+- After an email marked as inprogress, a separate check should be made to figure if send operations is still in progress.
+- State machines are prone to dead-locks.
+- Application does not take into account restarts. If restarted, the default service is still Mailgun. No state is saved.
+- A more advanced approach should be designed to decide based on a consequent number of fails. Each service will fail eventually at some point of time. The crucial thing is to realize a complete service meltdown.
+- What if we try to send millions of emails ?
+- Current DB interaction is also naive. Db will also fail.
+
 ## Endpoints
 
 Mail service accepts a POST request with the following parameters;
 
-### /mail
+### POST /mail
 
 ```json
 {"from": "bcambel@gmail.com",
@@ -51,7 +76,7 @@ and returns
 
 ```
 
-### ```/mail/<id>```
+### GET ```/mail/<id>```
 
 Mail service accepts an ID parameter and returns the mail object.
 
@@ -72,7 +97,7 @@ Mail service accepts an ID parameter and returns the mail object.
 
 ```
 
-### /admin
+### GET /admin
 
 Flask Admin application to manage mail objects. Theorically only accessible by the administrator of the application. For demostration purposes, admin app is open to everyone.
 

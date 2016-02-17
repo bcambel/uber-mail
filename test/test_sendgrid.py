@@ -58,6 +58,7 @@ def test_invalid_api_key():
   print a
   assert a['status'] == 400
 
+@nottest
 def test_send():
   a = postman.sendgrid.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
   print a

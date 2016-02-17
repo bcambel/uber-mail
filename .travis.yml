@@ -4,3 +4,12 @@ python:
   - "2.7"
 install: "pip install -r requirements.txt"
 script: nosetests
+addons:
+  postgresql: "9.4.1"
+
+services:
+  - postgresql
+
+before_script:
+  - cp settings.cfg.sample settings.cfg
+  - psql -c 'create database uber_mail_test;' -U postgres
