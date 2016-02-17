@@ -58,9 +58,15 @@ def test_invalid_api_key():
   print a
   assert a['status'] == 400
 
-@nottest
 def test_send():
   a = postman.sendgrid.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
   print a
 
   match_result(a, {'status':200, 'result' : {'message':'success'}})
+
+@nottest
+def test_successfull_email_huge_text_request_returns_a_id():
+  a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Hello", "\n".join(100000 * ["Hey Bahadir, delivery will be late"]))
+
+  print a
+  assert a['status'] == 200 and "id" in a['result']

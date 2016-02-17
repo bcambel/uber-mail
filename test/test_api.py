@@ -89,3 +89,21 @@ def test_multiple_email_passes_validation():
   print api_result.data
   print api_result.status
   assert api_result.status == "200 OK"
+
+def test_multiple_email_invalid_fails_validation():
+  """
+  Send 2 emails one valid, one invalid, except to fail.
+  """
+  multiple_to = base_email.copy()
+  multiple_to['to'] = 'bcambel@gmail.com,bcambel@'
+
+  api_result = app_client.post("/mail",
+                            data=multiple_to)
+
+  print api_result.data
+  print api_result.status
+  assert api_result.status == "400 BAD REQUEST"
+  api_json_result = json.loads(api_result.data)
+  assert api_json_result['message'][0]['field'] == 'to'
+  assert api_json_result['message'][0]['parsed'] == 'bcambel@gmail.com'
+  assert api_json_result['message'][0]['unparsed'] == 'bcambel@'

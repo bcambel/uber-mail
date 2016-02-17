@@ -13,6 +13,10 @@ Mail Service composed of ;
 components and behind the scenes uses SQLAlchemy to store the incoming mail requests into the database. A separate process polls the database
 and tries to send email to the parties.
 
+## Architecture
+
+Each mail post request stored into DB and queued for sending in some later time. API clients can record the email id, and query the API anytime to retrieve the status of the email sending operation. Each email contains a result field which stores the response of the API gateway. In SendGrid case, the result message contains the internal SendGrid ID.
+
 ## Endpoints
 
 Mail service accepts a POST request with the following parameters;

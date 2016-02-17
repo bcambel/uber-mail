@@ -30,7 +30,10 @@ def validate_form(form):
       if parsed_email is None:
         messages.append({'field': field, 'message':"Email field '{}' is not a valid email address {}".format(field, form[field])})
       if failed_emails is not None and len(failed_emails) > 0:
-        messages.append({'field': field, 'message':"Email field '{}' contains invalid email address [{}]".format(field, ",".join(failed_emails))})
+        messages.append({'field': field,
+                         'message':"Email field '{}' contains invalid email address(es)".format(field),
+                         'parsed': ",".join([str(e) for e in parsed_email] or ""),
+                         'unparsed': ",".join([str(e) for e in failed_emails])})
 
 
   return messages
@@ -50,7 +53,8 @@ class SendEmail(Resource):
     if len(validation_messages) > 0:
       abort( 400, message=validation_messages)
 
-    email_id = Email.insert(**data)
+    logging.info(data)
+    email_id = Email.insert(data)
     logging.info("Commit completed " + email_id )
 
     mail = Email.by_id(email_id).as_dict()

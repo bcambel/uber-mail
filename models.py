@@ -25,14 +25,14 @@ class Email(db.Model):
     return d
 
   @classmethod
-  def insert(cls, **kwargs):
+  def insert(cls, data):
     eq = Email()
     eq.id = str(uuid.uuid4())
     eq.status = "queued"
-    eq.from_address = kwargs.get("from")
-    eq.to_address = kwargs.get("to")
-    eq.subject = kwargs.get("subject")
-    eq.mail = kwargs.get('text')
+    eq.from_address = data.get("from")
+    eq.to_address = data.get("to")
+    eq.subject = data.get("subject")
+    eq.mail = data.get('text')
 
     db.session.add(eq)
 

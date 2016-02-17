@@ -61,3 +61,10 @@ def test_successfull_email_request_returns_a_id():
   a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Hello", "Hey Bahadir, delivery will be late")
 
   assert a['status'] == 200 and "id" in a['result']
+
+@nottest
+def test_successfull_email_huge_text_request_returns_a_id():
+  a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Hello", "\n".join(100000 * ["Hey Bahadir, delivery will be late"]))
+
+  print a
+  assert a['status'] == 200 and "id" in a['result']
