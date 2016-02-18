@@ -33,7 +33,11 @@ settings = read_config(args.config)
 flapp = Flask(__name__)
 flapp.config['SQLALCHEMY_DATABASE_URI'] = settings.get("default", "db")
 flapp.secret_key = 'super secret key'
-flapp.debug = True
+
+logging.info("Debug is: %s", settings.get("default",'debug'))
+
+if "True" == settings.get("default",'debug'):
+    flapp.debug = True
 
 sentry = Sentry(flapp,
                 logging=True,

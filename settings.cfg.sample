@@ -4,3 +4,4 @@ mailgun_key =
 mailgun_domain =
 sendgrid_key =
 sentry_dsn =
+debug = True
