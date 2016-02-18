@@ -1,5 +1,5 @@
 [default]
-db = postgresql://postgres:@localhost/uber_mail_test
+db = postgresql://uber_mailer_user:uber_mailer_user@localhost/uber_mailer
 mailgun_key =
 mailgun_domain =
 sendgrid_key =

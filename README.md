@@ -13,6 +13,46 @@ Mail Service composed of ;
 components and behind the scenes uses SQLAlchemy to store the incoming mail requests into the database. A separate process polls the database
 and tries to send email to the parties.
 
+## Installation
+
+```bash
+virtualenv venv
+source venv/bin/active
+pip install -r requirements.txt
+```
+
+uber-mail requires postgres installed on a machine
+
+```bash
+sudo su postgres
+psql < scripts/db.sql
+```
+will create a database, a user, and create the necessary table(s). Adding superuser rights to this user is **not recommended** for production environments.
+
+## Usage
+
+In a development environment, once the virtual env is activated, start the API Service
+
+```bash
+python app.py --config settings.cfg
+```
+ in a separate terminal window start the mail service
+
+ ```bash
+python mail_service.py
+ ```
+
+Either go to [http://localhost:5000/admin/email](http://localhost:5000/admin/email) to create a new email or do a HTTP POST to the service
+
+```bash
+# if you have HTTPIE installed
+http POST localhost:5000/mail from="bcambel@gmail.com" to="bcambel@gmail.com" subject="Hello" text="This email will be sent via a Mail gateway" --form
+# if not fall back to cURL
+curl --data "from=bcambel@gmail.com&to=bcambel@gmail.com&subject=Hello&text=This email will be sent via a Mail gateway" localhost:5000/mail
+```
+
+
+
 ## Architecture
 
 ![mail_service](https://cloud.githubusercontent.com/assets/144385/13109081/73411c14-d577-11e5-891b-bd66c277823b.png)
@@ -109,16 +149,3 @@ Flask Admin application to manage mail objects. Theorically only accessible by t
 [] Handle Mail gateway timeouts
 [+] Handle 429(Too many requests) by Sendgrid
 
-## Development
-
-```sql
-CREATE TABLE email (id VARCHAR(36),
-                    status VARCHAR(10),
-                    from_address VARCHAR(100),
-                    to_address TEXT,
-                    subject TEXT,
-                    mail TEXT,
-                    created_at TIMESTAMP(6) WITHOUT TIME ZONE,
-                    updated_at TIMESTAMP(6) WITHOUT TIME ZONE,
-                    result TEXT);
-```
