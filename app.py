@@ -1,6 +1,6 @@
 import argparse
 from ConfigParser import RawConfigParser
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_restful import Resource, Api
@@ -57,16 +57,20 @@ db.create_all()
 
 def startup():
     from models import Email
-    from rest import SendEmail
+    from rest import SendEmailResource, EmailResource
     admin.add_view(ModelView(Email, db.session))
-    api.add_resource(SendEmail, '/mail', '/mail/<string:id>')
+    api.add_resource(SendEmailResource, '/mail')
+    api.add_resource(EmailResource, '/mail/<string:id>')
 
 
 @flapp.route("/error")
-def hello():
+def error_demo():
     # demonstration of auto error capturing using Sentry.
     raise ValueError("Not a valid set.")
 
+@flapp.route("/")
+def home():
+    return redirect("/api/spec")
 
 if __name__ == "__main__":
     startup()

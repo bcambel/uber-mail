@@ -41,8 +41,8 @@ def validate_form(form):
     return messages
 
 
-class SendEmail(Resource):
-    @swagger.operation(notes='Retrieve email status',
+class EmailResource(Resource):
+    @swagger.operation(notes='Retrieve email status by /mail/<id>',
                        responseClass=Email.__name__,
                        nickname='fetch email',
                        parameters=[{'name': 'id', 'dataType': 'string'}],
@@ -56,6 +56,7 @@ class SendEmail(Resource):
 
         return email.as_dict()
 
+class SendEmailResource(Resource):
     @swagger.operation(notes='Submit an email to send',
                        responseClass=Email.__name__,
                        nickname='submit a new email',
