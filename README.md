@@ -86,6 +86,8 @@ curl --data "from=bcambel@gmail.com&to=bcambel@gmail.com&subject=Hello&text=This
 
 ```Config``` folder contains nginx and supervisor configuration samples. It's recommended to use these at least. One addition would be to use **uwsgi** or **gunicorn** or similar.
 
+There would be 2 supervised processed running ```ubermail``` and ```ubermail_service``` that could be managed by the ```supervisorctl``` command.
+
 All application log output will be redirected to ```syslog``` automatically via supervisor's ```stdout_log``` directive set to ```syslog```. From there on, you may use a service like [https://papertrailapp.com/](https://papertrailapp.com/) to manage your logs.
 
 ## Architecture
