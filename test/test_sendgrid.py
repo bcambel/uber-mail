@@ -16,7 +16,6 @@ def test_invalid_from_field():
     match_result(a, expected_result)
 
 
-@nottest
 def test_invalid_to_field():
     """
     Sendgrid accepts empty To fields. Wow.
@@ -61,7 +60,6 @@ def test_invalid_api_key():
     assert a['status'] == 400
 
 
-@nottest
 def test_send():
     a = postman.sendgrid.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Delivery of your good", "Hey Bahadir, delivery will be late")
     print a

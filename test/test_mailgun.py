@@ -27,7 +27,6 @@ def test_empty_to_field_fails():
     match_result(a, expected_result)
 
 
-@nottest
 def test_empty_subject_field_succeed():
     a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "", "Hey Bahadir, delivery will be late")
 
@@ -62,7 +61,6 @@ def test_invalid_credentials_result_in_exception():
     assert a['status'] == 401
 
 
-@nottest
 def test_successfull_email_request_returns_a_id():
     a = postman.mailgun.deliver("bcambel@gmail.com", "bcambel@gmail.com", "Hello", "Hey Bahadir, delivery will be late")
 
