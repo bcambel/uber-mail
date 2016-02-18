@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful_swagger import swagger
 import logging
 import os
+from raven.contrib.flask import Sentry
 import requests
 import sendgrid
 
@@ -33,6 +34,8 @@ flapp.config['SQLALCHEMY_DATABASE_URI'] = settings.get("default","db")
 flapp.secret_key = 'super secret key'
 flapp.debug=True
 
+sentry = Sentry(flapp, logging=True, level=logging.ERROR, dsn=settings.get("default", "sentry_dsn"))
+
 # navigate to localhost:5000/admin to interact with Mail objects.
 admin = Admin(flapp, name='MailServ', template_mode='bootstrap3')
 api = swagger.docs(Api(flapp), apiVersion='1.0',
@@ -52,9 +55,10 @@ def startup():
   admin.add_view(ModelView(Email, db.session))
   api.add_resource(SendEmail,'/mail', '/mail/<string:id>')
 
-@flapp.route("/")
+@flapp.route("/error")
 def hello():
-    pass
+  # demonstration of auto error capturing using Sentry.
+  raise ValueError("Not a valid set.")
 
 
 if __name__ == "__main__":
