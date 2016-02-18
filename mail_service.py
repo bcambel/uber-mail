@@ -45,12 +45,16 @@ class MailService(object):
         status_code = delivery_result['status']
 
         if status_code >= 429:  # classic 5xx + 429 (Too many requests)
+            logging.error("Mail service error", extra=dict(mail_id=mail.id, http_res=delivery_result))
             self.postman.switch()
             self.release_instance(mail, status=Statuses.queued)
         elif delivery_result['success']:
             self.release_instance(mail, Statuses.success, delivery_result)
         else:
             # handle 3xx and 4xx errors.
+            # if there's a change in the API, and receive 4xx for all
+            # we will set the whole queue status into ERROR mode.
+            logging.error("Mail service warning", extra=dict(mail_id=mail.id, http_res=delivery_result))
             self.release_instance(mail, Statuses.error, delivery_result)
 
     def query(self):
@@ -69,5 +73,5 @@ class MailService(object):
 
 
 if __name__ == "__main__":
-    ms = MailService()
+    ms = MailService(db)
     ms.forever()
