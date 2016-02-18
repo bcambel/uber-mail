@@ -22,45 +22,52 @@ parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--config', default='settings.cfg')
 args = parser.parse_args()
 
+
 def read_config(config_file):
-  cp = RawConfigParser()
-  cp.read(config_file)
-  return cp
+    cp = RawConfigParser()
+    cp.read(config_file)
+    return cp
 
 settings = read_config(args.config)
 
 flapp = Flask(__name__)
-flapp.config['SQLALCHEMY_DATABASE_URI'] = settings.get("default","db")
+flapp.config['SQLALCHEMY_DATABASE_URI'] = settings.get("default", "db")
 flapp.secret_key = 'super secret key'
-flapp.debug=True
+flapp.debug = True
 
-sentry = Sentry(flapp, logging=True, level=logging.ERROR, dsn=settings.get("default", "sentry_dsn"))
+sentry = Sentry(flapp,
+                logging=True,
+                level=logging.ERROR,
+                dsn=settings.get("default", "sentry_dsn"))
 
 # navigate to localhost:5000/admin to interact with Mail objects.
 admin = Admin(flapp, name='MailServ', template_mode='bootstrap3')
+
 api = swagger.docs(Api(flapp), apiVersion='1.0',
-                    resourcePath='/',
+                   resourcePath='/',
                    produces=["application/json", "text/html"],
                    api_spec_url='/api/spec',
                    description='A Basic Mail Service API')
 
 db = SQLAlchemy(flapp)
 
-# app will crash on startup if cant connect
+# app will crash on startup if can't connect
 db.create_all()
 
+
 def startup():
-  from models import Email
-  from rest import SendEmail
-  admin.add_view(ModelView(Email, db.session))
-  api.add_resource(SendEmail,'/mail', '/mail/<string:id>')
+    from models import Email
+    from rest import SendEmail
+    admin.add_view(ModelView(Email, db.session))
+    api.add_resource(SendEmail, '/mail', '/mail/<string:id>')
+
 
 @flapp.route("/error")
 def hello():
-  # demonstration of auto error capturing using Sentry.
-  raise ValueError("Not a valid set.")
+    # demonstration of auto error capturing using Sentry.
+    raise ValueError("Not a valid set.")
 
 
 if __name__ == "__main__":
-  startup()
-  flapp.run()
+    startup()
+    flapp.run()
