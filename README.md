@@ -8,10 +8,21 @@ Mail Service composed of ;
 
 - Flask
 - Flask Restful
+- Flask Restful Swagger (API Documentation)
 - Flask Admin
+- Sentry (Error reporting)
 
-components and behind the scenes uses SQLAlchemy to store the incoming mail requests into the database. A separate process polls the database
-and tries to send email to the parties.
+components and behind the scenes uses SQLAlchemy to store the incoming mail requests into the database. A separate process (Mail Service) polls the database and tries to send email to the 3rd parties.
+
+### Experience
+
+- Python (experienced 2+ years)
+- Flask (somewhat experienced)
+- Postgres (experienced)
+
+The last 1.5+ years, I haven't been active on Python that much, there might be some missing bits and pieces, not doing things in the Pythonic way.
+
+I kept the application side as simple as possible. No HTML page, API only.
 
 ## Installation
 
@@ -29,20 +40,33 @@ psql < scripts/db.sql
 ```
 will create a database, a user, and create the necessary table(s). Adding superuser rights to this user is **not recommended** for production environments.
 
-## Usage
+## Development
+
+Copy ```settings.cfg.sample``` to ```settings.cfg``` and fill in the required arguments.
+
+```bash
+cp settings.cfg.sample settings.cfg
+```
 
 In a development environment, once the virtual env is activated, start the API Service
 
 ```bash
 python app.py --config settings.cfg
 ```
- in a separate terminal window start the mail service
+in a separate terminal window start the mail service
 
  ```bash
 python mail_service.py
  ```
 
-Either go to [http://localhost:5000/admin/email](http://localhost:5000/admin/email) to create a new email or do a HTTP POST to the service
+## Tests
+
+In your terminal run ```nosetests``` to run all the tests, to see if 20+ tests all running correctly.
+
+
+# Usage
+
+Either go to [http://localhost:5000/admin/email](http://localhost:5000/admin/email) to create a new email or do a HTTP POST to the service. If you create a new mail object, set the status of the object 'queued' or leave blank.
 
 ```bash
 # if you have HTTPIE installed
@@ -50,8 +74,6 @@ http POST localhost:5000/mail from="bcambel@gmail.com" to="bcambel@gmail.com" su
 # if not fall back to cURL
 curl --data "from=bcambel@gmail.com&to=bcambel@gmail.com&subject=Hello&text=This email will be sent via a Mail gateway" localhost:5000/mail
 ```
-
-
 
 ## Architecture
 
@@ -82,7 +104,8 @@ Storing incoming mail requests into DB has the following benefits.
 - Application does not take into account restarts. If restarted, the default service is still Mailgun. No state is saved.
 - A more advanced approach should be designed to decide based on a consequent number of fails. Each service will fail eventually at some point of time. The crucial thing is to realize a complete service meltdown.
 - What if we try to send millions of emails ?
-- Current DB interaction is also naive. Db will also fail.
+- Current DB interaction is also naive. Db will also fail. More exception handling.
+- Result field of the Mail object could be a field of ```JSON``` in Postgres rather than a ```text``` field so that we can query JSON directly thanks to awesomeness of Postgres.
 
 ## Endpoints
 

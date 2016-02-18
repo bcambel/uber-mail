@@ -23,7 +23,7 @@ class MailService(object):
     def lock_instance(self, mail):
 
         mail.status = Statuses.inprogress
-        mail.lock_at = datetime.utcnow()
+        mail.updated_at = datetime.utcnow()
         self.db.session.add(mail)
         self.db.session.commit()
 
