@@ -42,6 +42,13 @@ will create a database, a user, and create the necessary table(s). Adding superu
 
 ## Development
 
+Make sure you have installed
+
+```bash
+# ubuntu
+sudo apt-get install -y build-essential python-dev libffi-dev libssl-dev libgdbm-dev libpq-dev
+```
+
 Copy ```settings.cfg.sample``` to ```settings.cfg``` and fill in the required arguments.
 
 ```bash
@@ -74,6 +81,12 @@ http POST localhost:5000/mail from="bcambel@gmail.com" to="bcambel@gmail.com" su
 # if not fall back to cURL
 curl --data "from=bcambel@gmail.com&to=bcambel@gmail.com&subject=Hello&text=This email will be sent via a Mail gateway" localhost:5000/mail
 ```
+
+## Production
+
+```Config``` folder contains nginx and supervisor configuration samples. It's recommended to use these at least. One addition would be to use **uwsgi** or **gunicorn** or similar.
+
+All application log output will be redirected to ```syslog``` automatically via supervisor's ```stdout_log``` directive set to ```syslog```. From there on, you may use a service like [https://papertrailapp.com/](https://papertrailapp.com/) to manage your logs.
 
 ## Architecture
 
